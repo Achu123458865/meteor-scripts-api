@@ -1,0 +1,29 @@
+import { CPacketCustomPayload } from "net.minecraft.network.packet.c2s.play";
+
+// Define the fake book data
+let bookNBT = {
+  pages: [
+    '{"text":"This is a test."}',
+    '{"text":"Meteor is OP."}'
+  ],
+  title: "HackedBook",
+  author: "MAXI123"
+};
+
+// Convert the book data to NBT format
+let bookBuffer = new net.minecraft.nbt.NbtCompound();
+bookBuffer.putString("title", bookNBT.title);
+bookBuffer.putString("author", bookNBT.author);
+
+let pagesList = new net.minecraft.nbt.NbtList();
+bookNBT.pages.forEach(p => pagesList.add(net.minecraft.nbt.NbtString.of(p)));
+bookBuffer.put("pages", pagesList);
+
+// Send the spoofed book packet to the server
+let packet = new CPacketCustomPayload(
+  new net.minecraft.util.Identifier("minecraft:book_sign"),
+  net.minecraft.network.PacketByteBufs.create().writeNbt(bookBuffer)
+);
+
+mc.player.networkHandler.sendPacket(packet);
+chat.addMessage("Sent spoofed book packet with author MAXI123.");
